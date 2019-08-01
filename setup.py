@@ -11,7 +11,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='rg_instructor_analytics_log_collector',
-    version='0.1.0',
+    version='2.2.1-web-science',
     install_requires=[
         'setuptools',
         'django-model-utils>=2.3.1,<4',

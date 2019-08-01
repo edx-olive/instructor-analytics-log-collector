@@ -232,6 +232,7 @@ class StudentStepPipeline(BasePipeline):
             'target_unit': target_unit,
             'log_time': record.log_time
         }
+        self.add_cohort_id(data)
         return data if self.is_valid(data) else None
 
     def is_valid(self, data):

@@ -4,6 +4,9 @@ Collection of the base pipelines.
 
 from abc import ABCMeta, abstractmethod
 
+from opaque_keys.edx.keys import CourseKey
+from openedx.core.djangoapps.course_groups.models import CourseCohort
+
 from rg_instructor_analytics_log_collector.models import LastProcessedLog, LogTable
 
 
@@ -55,6 +58,26 @@ class BasePipeline(object):
             query = query.filter(log_time__gt=last_processed_log_date)
 
         return query.order_by('log_time')
+
+    def add_cohort_id(self, formatted_record):
+        """
+        Add the cohort_id to the formatted record if there's correspondend user and course in it.
+        """
+        course = formatted_record.get('course')
+        user_id = formatted_record.get('user_id')
+        cohort = None
+
+        if not course or not isinstance(course, CourseKey) :
+            course_id = course if course else formatted_record.get('course_id')
+            course = CourseKey.from_string(course_id) if course_id else None
+
+        if course and user_id:
+            cohort = CourseCohort.objects.filter(
+                course_user_group__users=user_id,
+                course_user_group__course_id=course
+            ).first()
+
+        formatted_record['cohort_id'] = cohort.id if cohort else 0
 
     @abstractmethod
     def format(self, record):

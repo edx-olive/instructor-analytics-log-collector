@@ -34,6 +34,7 @@ class VideoViewsPipeline(BasePipeline):
             'log_time': record.log_time,
             'event_type': record.message_type
         }
+        self.add_cohort_id(data)
 
         return data if self.is_valid(data) else None
 
@@ -60,6 +61,7 @@ class VideoViewsPipeline(BasePipeline):
         video_views_by_day, created_video_day = VideoViewsByDay.objects.get_or_create(
             course=course,
             video_block_id=record['block_id'],
+            cohort_id=record['cohort_id'],
             day=record['log_time'].date(),
         )
         list_users_ids = video_views_by_day.users_ids.split(',') if video_views_by_day.users_ids else []
@@ -77,6 +79,7 @@ class VideoViewsPipeline(BasePipeline):
         video_views_by_user, created_video_views_by_user = VideoViewsByUser.objects.get_or_create(
             course=course,
             user_id=user_id,
+            cohort_id=record['cohort_id'],
             video_block_id=record['block_id'],
         )
 

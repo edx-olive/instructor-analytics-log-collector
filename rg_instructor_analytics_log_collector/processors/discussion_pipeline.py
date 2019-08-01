@@ -47,6 +47,7 @@ class DiscussionPipeline(BasePipeline):
                 'thread_type': event_body['event'].get('thread_type'),
                 'log_time': record.log_time
             }
+            self.add_cohort_id(data)
 
         return data if data and self.is_valid(data) else None
 
@@ -74,6 +75,7 @@ class DiscussionPipeline(BasePipeline):
         if disc_user_created:
             disc_day_activity, disc_day_created = DiscussionActivityByDay.objects.get_or_create(
                 course=disc_user_activity.course,
+                cohort_id=disc_user_activity.cohort_id,
                 day=disc_user_activity.log_time.date()
             )
             disc_day_activity.total = 1 if disc_day_created else (disc_day_activity.total + 1)

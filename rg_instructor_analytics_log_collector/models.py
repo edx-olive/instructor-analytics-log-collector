@@ -46,9 +46,10 @@ class EnrollmentByDay(models.Model):
     unenrolled = models.IntegerField(default=0)
     course = CourseKeyField(max_length=255, db_index=True)
     last_updated = models.DateField(auto_now=True, null=True)
+    cohort_id = models.IntegerField(default=0)
 
     class Meta:  # NOQA
-        unique_together = ('course', 'day',)
+        unique_together = ('course', 'day', 'cohort_id')
         ordering = ['-day']
 
     def __unicode__(self):  # NOQA
@@ -93,9 +94,10 @@ class VideoViewsByUser(models.Model):
     video_block_id = models.CharField(max_length=255, db_index=True)
     is_completed = models.BooleanField(default=False)
     viewed_time = models.IntegerField(default=0)
+    cohort_id = models.IntegerField(default=0)
 
     class Meta:  # NOQA
-        unique_together = ('course', 'user_id', 'video_block_id')
+        unique_together = ('course', 'user_id', 'video_block_id', 'cohort_id')
 
     def __unicode__(self):  # NOQA
         return u'{} {} {}'.format(self.user_id, self.course, self.video_block_id)
@@ -129,9 +131,10 @@ class VideoViewsByDay(models.Model):
     day = models.DateField(db_index=True)
     total = models.IntegerField(default=0)
     users_ids = models.TextField(blank=True, null=True, validators=[validate_comma_separated_integer_list])
+    cohort_id = models.IntegerField(default=0)
 
     class Meta:  # NOQA
-        unique_together = ('course', 'video_block_id', 'day')
+        unique_together = ('course', 'video_block_id', 'day', 'cohort_id')
         ordering = ['-day']
 
     def __unicode__(self):  # NOQA
@@ -151,6 +154,7 @@ class DiscussionActivity(models.Model):
     discussion_id = models.CharField(max_length=255)
     thread_type = models.CharField(max_length=255, blank=True, null=True)
     log_time = models.DateTimeField()
+    cohort_id = models.IntegerField(default=0)
 
     def __unicode__(self):  # NOQA
         return u'{},  {},  user_id - {}'.format(self.event_type, self.course, self.user_id)
@@ -164,9 +168,10 @@ class DiscussionActivityByDay(models.Model):
     course = CourseKeyField(max_length=255, db_index=True)
     day = models.DateField(db_index=True)
     total = models.IntegerField(default=0)
+    cohort_id = models.IntegerField(default=0)
 
     class Meta:  # NOQA
-        unique_together = ('course', 'day')
+        unique_together = ('course', 'day', 'cohort_id')
         ordering = ['-day']
 
     def __unicode__(self):  # NOQA
@@ -185,6 +190,7 @@ class StudentStepCourse(models.Model):
     current_unit = models.CharField(max_length=255)
     target_unit = models.CharField(max_length=255)
     log_time = models.DateTimeField()
+    cohort_id = models.IntegerField(default=0)
 
     def __unicode__(self):  # NOQA
         return u'{},  {},  user_id - {}'.format(self.event_type, self.course, self.user_id)
@@ -198,9 +204,10 @@ class LastCourseVisitByUser(models.Model):
     user_id = models.IntegerField(db_index=True)
     course = CourseKeyField(max_length=255, db_index=True)
     log_time = models.DateTimeField()
+    cohort_id = models.IntegerField(default=0)
 
     class Meta:  # NOQA
-        unique_together = ('user_id', 'course')
+        unique_together = ('user_id', 'course', 'cohort_id')
 
     def __unicode__(self):  # NOQA
         return u'{}, user_id - {}'.format(self.course, self.user_id)
@@ -215,9 +222,10 @@ class CourseVisitsByDay(models.Model):
     users_ids = models.TextField(default='', validators=[validate_comma_separated_integer_list])
     day = models.DateField(db_index=True)
     total = models.IntegerField(default=0)
+    cohort_id = models.IntegerField(default=0)
 
     class Meta:  # NOQA
-        unique_together = ('course', 'day')
+        unique_together = ('course', 'day', 'cohort_id')
         ordering = ['-day']
 
     def __unicode__(self):  # NOQA
