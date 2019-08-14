@@ -29,7 +29,7 @@ class CourseActivityPipeline(BasePipeline):
         last_processed_log_date = self.retrieve_last_date()
 
         if last_processed_log_date:
-            query = query.filter(created__gt=last_processed_log_date)
+            query = query.filter(log_time__gt=last_processed_log_date)
 
         return query.order_by('created')
 

@@ -19,7 +19,7 @@ def run_ziped_file_loader(dir_name, repository, reload_logs=False):
     if not exists(dir_name) or not isdir(dir_name):
         raise Exception("Can not find log directory by nex path: {}".format(dir_name))
     processed_files = repository.get_processed_zip_files()
-    for f in listdir(dir_name):
+    for f in sorted(listdir(dir_name), key=lambda f: (f == 'tracking.log', f)):
         if f == 'tracking.log':
             with open(join(dir_name, f), 'rb') as log_file:
                 logging.info('Started process next log file: {}'.format(f))
