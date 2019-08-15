@@ -61,10 +61,14 @@ class StudentStepPipeline(BasePipeline):
             target_location = UsageKey.from_string(url.kwargs['location'])
             target_unit = target_location.block_id
 
-            last_step = StudentStepCourse.objects.filter(
-                user_id=body_context['user_id'],
-                course=target_location.course_key
-            ).order_by('-log_time').first()
+            try:
+                last_step = StudentStepCourse.objects.filter(
+                    user_id=body_context['user_id'],
+                    course=target_location.course_key
+                ).order_by('-log_time').first()
+            except TypeError as err:
+                logging.info('Course key type error: {}'.format(err))
+                return None, None, subsection_id
 
             current_unit = last_step and last_step.target_unit
 

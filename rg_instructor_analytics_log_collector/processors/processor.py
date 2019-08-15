@@ -61,7 +61,7 @@ class Processor(object):
                 if data_record:
                     pipeline.push_to_database(data_record)
                 pipeline.update_last_processed_log(record)
-                logging.info('{} processor stopped at {}'.format(pipeline.alias, datetime.now()))
+            logging.info('{} processor stopped at {}'.format(pipeline.alias, datetime.now()))
 
     def delete_logs(self):
         """Delete all unused log records."""
