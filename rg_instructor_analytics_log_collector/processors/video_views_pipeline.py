@@ -25,15 +25,18 @@ class VideoViewsPipeline(BasePipeline):
         """Format raw log to the internal format."""
         event_body = json.loads(record.log_message)
         event_body_detail = json.loads(event_body['event'])
-        data = {
-            'course_id': event_body['context']['course_id'],
-            'user_id': event_body['context']['user_id'],
-            'block_id': event_body_detail['id'],
-            'viewed_time': event_body_detail['currentTime'],
-            'is_video_completed': True if record.message_type == Events.USER_FINISHED_WATCH_VIDEO else False,
-            'log_time': record.log_time,
-            'event_type': record.message_type
-        }
+        try:
+            data = {
+                'course_id': event_body['context']['course_id'],
+                'user_id': event_body['context']['user_id'],
+                'block_id': event_body_detail['id'],
+                'viewed_time': event_body_detail['currentTime'],
+                'is_video_completed': True if record.message_type == Events.USER_FINISHED_WATCH_VIDEO else False,
+                'log_time': record.log_time,
+                'event_type': record.message_type
+            }
+        except KeyError:
+            data = {}
 
         return data if self.is_valid(data) else None
 
