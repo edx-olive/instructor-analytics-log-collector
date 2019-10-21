@@ -4,8 +4,8 @@ Models of the RG analytics.
 from django.core.validators import validate_comma_separated_integer_list
 from django.db import connection, models
 from django.urls import reverse
-
 from opaque_keys.edx.keys import CourseKey
+
 from openedx.core.djangoapps.xmodule_django.models import CourseKeyField
 from openedx.features.course_experience import course_home_url_name
 
@@ -27,15 +27,16 @@ class GeneralAnalyticsManager(models.Manager):
         :return: (string) with SQL code or an empty string if the courses_filter is None.
         """
 
-        if courses_filter is not None:
+        if courses_filter:
             courses_filter = (
-                "WHERE course_overview.org IN {0}{courses_filter}{1} "
-                "OR course_overview.display_org_with_default IN {0}{courses_filter}{1}"
-            ).format(*('', '') if isinstance(courses_filter, tuple) else ('("', '")'), courses_filter=courses_filter)
+                "WHERE course_overview.org IN {courses_filter} "
+                "OR course_overview.display_org_with_default IN {courses_filter}"
+            ).format(courses_filter=tuple(courses_filter))
         else:
             courses_filter = ''
 
-        return courses_filter
+        # To achieve correct SQL we should do this ('Canada',) -> ('Canada')
+        return courses_filter.replace(',)', ')')
 
     def extract_analytics_data(self, limit, offset, sort_key, ordering, courses_filter=None):
         """
