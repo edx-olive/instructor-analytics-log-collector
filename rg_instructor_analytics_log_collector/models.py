@@ -72,37 +72,31 @@ class GeneralAnalyticsManager(models.Manager):
 
         with connection.cursor() as cursor:
             cursor.execute("""
-                SELECT 
-                enrollment_by_day.id,
-                enrollment_by_day.course                                            AS course,
-                MAX(enrollment_by_day.enrolled)                                     AS diff_enr_max,
-                MAX(enrollment_by_day.enrolled) - MIN(enrollment_by_day.enrolled)   AS diff,
-                MAX(enrollment_by_day.total)                                        AS total,
-                MAX(enrollment_by_day.enrolled)                                     AS enrolled_max,
-                course_overview.start                                               AS start,
-                course_overview.end                                                 AS end,
-                course_overview.lowest_passing_grade                                AS lowest_passing_grade,
-                generated_certificates.certificates_count                           AS cert_count,
-                SUM(
-                    CASE WHEN 
-                        grade_statistic.total > course_overview.lowest_passing_grade 
-                    THEN 1 
-                    ELSE 0 END
+                SELECT
+                    course_overview.id AS course,
+                    course_overview.start AS start,
+                    course_overview.end AS end,
+                    COUNT(enrollment.id) AS total,
+                    SUM(IF(enrollment.is_active = 1, 1, 0)) AS enrolled_max,
+                    SUM(IF(enrollment.is_active = 0, 1, 0)) AS unenrolled,
+                    SUM(
+                        CASE 
+                        WHEN enrollment.is_active AND enrollment.created > DATE_SUB(NOW(), INTERVAL 7 DAY) THEN 1
+                        WHEN enrollment.is_active = 0 AND enrollment.created > DATE_SUB(NOW(), INTERVAL 7 DAY) THEN -1
+                        ELSE 0 END
+                    ) AS diff,
+                    (
+                        select COUNT(certificates.id) FROM certificates_generatedcertificate AS certificates
+                        where certificates.course_id = course_overview.id
+                    ) AS cert_count,
+                    (
+                        SELECT COUNT(grades.id) FROM rg_instructor_analytics_gradestatistic AS grades
+                        WHERE grades.course_id = course_overview.id AND grades.total > course_overview.lowest_passing_grade
                     ) AS total_passing
-                FROM rg_instructor_analytics_log_collector_enrollmentbyday AS enrollment_by_day
-                    LEFT JOIN course_overviews_courseoverview AS course_overview
-                        ON enrollment_by_day.course = course_overview.id
-                    LEFT JOIN (
-                        SELECT generated_certificates.course_id,
-                            COUNT(generated_certificates.id) AS certificates_count
-                        FROM certificates_generatedcertificate AS generated_certificates
-                        GROUP BY generated_certificates.id
-                        ) generated_certificates
-                        ON enrollment_by_day.course =  generated_certificates.course_id
-                    LEFT JOIN rg_instructor_analytics_gradestatistic AS grade_statistic
-                        ON enrollment_by_day.course = grade_statistic.course_id
+                FROM course_overviews_courseoverview AS course_overview
+                LEFT JOIN student_courseenrollment AS enrollment ON enrollment.course_id = course_overview.id
                 {filter}
-                GROUP BY enrollment_by_day.course
+                GROUP BY course_overview.id
                 ORDER BY {sort_key} {ordering}
                 LIMIT {limit} OFFSET {offset};
             """.format(limit=limit, offset=offset, sort_key=sort_key, ordering=ordering, filter=courses_filter))
@@ -110,42 +104,19 @@ class GeneralAnalyticsManager(models.Manager):
             for row in cursor.fetchall():
                 result_list.append(
                     {
-                        "name": str(row[1]),
-                        "course_url": reverse(course_home_url_name(CourseKey.from_string(row[1])), args=[row[1]]),
-                        "total": int(row[4]),
-                        "enrolled_max": int(row[5]),
-                        "week_change": row[3],
-                        "start_date": row[6].strftime("%m/%d/%Y") if row[6] is not None else '-',
-                        "end_date": row[7].strftime("%m/%d/%Y") if row[7] is not None else '-',
-                        "certificates": int(row[9]) if row[9] is not None else 0,
-                        "count_graded": int(row[10]),
+                        "name": str(row[0]),
+                        "course_url": reverse(course_home_url_name(CourseKey.from_string(row[0])), args=[row[0]]),
+                        "start_date": row[1].strftime("%m/%d/%Y") if row[1] is not None else '-',
+                        "end_date": row[2].strftime("%m/%d/%Y") if row[2] is not None else '-',
+                        "total": int(row[3]),
+                        "enrolled_max": int(row[4]),
+                        "week_change": int(row[6]),
+                        "certificates": int(row[7]),
+                        "count_graded": int(row[8]),
                     }
                 )
 
         return result_list
-
-    def get_courses_count_by_site(self, courses_filter):
-        """
-        Method that returns count courses for selected site or count of all courses.
-
-        :return: (int) Count courses.
-        """
-
-        courses_filter = self._get_course_org_filter(courses_filter)
-
-        with connection.cursor() as cursor:
-            cursor.execute(
-                """
-                    SELECT enrollment_by_day.id
-                    FROM rg_instructor_analytics_log_collector_enrollmentbyday AS enrollment_by_day
-                        LEFT JOIN course_overviews_courseoverview AS course_overview
-                            ON enrollment_by_day.course = course_overview.id
-                    {filter}
-                    GROUP BY enrollment_by_day.course
-                """.format(filter=courses_filter)
-            )
-
-            return len(cursor.fetchall())
 
 
 class ProcessedZipLog(models.Model):
