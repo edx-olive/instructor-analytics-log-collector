@@ -23,7 +23,7 @@ def run_ziped_file_loader(dir_name, repository, reload_logs=False):
         if f == 'tracking.log':
             with open(join(dir_name, f), 'rb') as log_file:
                 logging.info('Started process next log file: {}'.format(f))
-                repository.add_new_log_records(log_file.readlines())
+                repository.add_new_log_records(log_file)
                 logging.info('Finished process next log file: {}'.format(f))
 
         if not f.endswith('.gz') or not reload_logs and f in processed_files:
@@ -31,6 +31,6 @@ def run_ziped_file_loader(dir_name, repository, reload_logs=False):
 
         with gzip.open(join(dir_name, f), 'rb') as log_file:
             logging.info('Started process next log file: {}'.format(f))
-            repository.add_new_log_records(log_file.readlines())
+            repository.add_new_log_records(log_file)
             repository.mark_as_processed_source(f)
             logging.info('Finished process next log file: {}'.format(f))
