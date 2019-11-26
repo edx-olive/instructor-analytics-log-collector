@@ -82,6 +82,12 @@ class LogTableAdmin(admin.ModelAdmin):
     search_fields = ['log_message']
 
 
+class StudentStepCourseAdmin(admin.ModelAdmin):
+    list_display = (
+        'course', 'user_id', 'current_unit', 'target_unit', 'log_time'
+    )
+
+
 admin.site.register(models.ProcessedZipLog, admin.ModelAdmin)
 admin.site.register(models.LogTable, LogTableAdmin)
 admin.site.register(models.EnrollmentByDay, admin.ModelAdmin)
@@ -91,6 +97,6 @@ admin.site.register(models.VideoViewsByBlock, admin.ModelAdmin)
 admin.site.register(models.VideoViewsByDay, admin.ModelAdmin)
 admin.site.register(models.DiscussionActivity, admin.ModelAdmin)
 admin.site.register(models.DiscussionActivityByDay, admin.ModelAdmin)
-admin.site.register(models.StudentStepCourse, admin.ModelAdmin)
+admin.site.register(models.StudentStepCourse, StudentStepCourseAdmin)
 admin.site.register(models.LastCourseVisitByUser, admin.ModelAdmin)
 admin.site.register(models.CourseVisitsByDay, admin.ModelAdmin)
