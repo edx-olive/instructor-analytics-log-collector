@@ -42,7 +42,7 @@ class Processor(object):
         """
         super(Processor, self).__init__()
         self.sleep_time = sleep_time
-        self.pipelinies = filter(lambda x: x.alias in alias_list, self.available_pipelines)
+        self.pipelines = filter(lambda x: x.alias in alias_list, self.available_pipelines)
 
     def process(self):
         """
@@ -51,7 +51,7 @@ class Processor(object):
         Fetch data records from pipelines and
         store them in a database.
         """
-        for pipeline in self.pipelinies:
+        for pipeline in self.pipelines:
             records = pipeline.get_query()
 
             if not records.exists():
@@ -106,11 +106,3 @@ class Processor(object):
                     LogTable.objects.filter(log_time__lt=delete_max_time).delete()
 
                 records = LogTable.objects.filter(log_time__lt=last_date).order_by('log_time')
-
-    def run(self, delete_logs=False):
-        """Run loop of the processor."""
-        while True:
-            self.process()
-            if delete_logs:
-                self.delete_logs()
-            time.sleep(self.sleep_time)
