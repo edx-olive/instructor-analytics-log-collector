@@ -7,7 +7,8 @@ import time
 import django
 django.setup()
 
-from rg_instructor_analytics_log_collector.raw_log_loaders import run_ziped_file_loader
+from rg_instructor_analytics_log_collector.processors.processor import Processor
+from rg_instructor_analytics_log_collector.raw_log_loaders import load_and_process
 from rg_instructor_analytics_log_collector.repository import MySQlRepository
 
 
@@ -34,13 +35,28 @@ def main():
         default=300
     )
     parser.add_argument('--reload-logs', action="store_true", help='Reload all logs from files into database')
+    parser.add_argument(
+        '--delete-logs', action="store_true",
+        help='Delete unused log records from database (after archived files processing only)'
+    )
 
     arg = parser.parse_args()
-    django.setup()
+
+    repository = MySQlRepository()
+    processor = Processor(
+        ["enrollment", "video_views", "discussion", "student_step", "course_activity"],
+        arg.sleep_time
+    )
+
+    # separate first run to apply reload_logs if passed
+    load_and_process(
+        arg.tracking_log_dir, repository, processor,
+        reload_logs=arg.reload_logs, delete_logs=arg.delete_logs
+    )
+    time.sleep(arg.sleep_time)
 
     while True:
-        repository = MySQlRepository()
-        run_ziped_file_loader(arg.tracking_log_dir, repository, reload_logs=arg.reload_logs)
+        load_and_process(arg.tracking_log_dir, repository, processor, delete_logs=arg.delete_logs)
         time.sleep(arg.sleep_time)
 
 

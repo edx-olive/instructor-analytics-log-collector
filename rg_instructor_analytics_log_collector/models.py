@@ -152,16 +152,24 @@ class EnrollmentByDay(models.Model):
     Cumulative per-day Enrollment stats.
     """
 
-    day = models.DateField(db_index=True)
+    day = models.DateField()
     total = models.IntegerField(default=0)
     enrolled = models.IntegerField(default=0)
     unenrolled = models.IntegerField(default=0)
-    course = CourseKeyField(max_length=255, db_index=True)
+    course = CourseKeyField(max_length=255)
     last_updated = models.DateField(auto_now=True, null=True)
 
     objects = GeneralAnalyticsManager()
 
     class Meta:  # NOQA
+        # NOTE(okopylova): empirically discovered that multi-column indexes are
+        # created for fields from unique_together. There is no documentation
+        # for the feature, so it might be related to database configuration and
+        # not working for all installation. Option index_together is not used
+        # here, because it creates index even in case if the same index
+        # already exists (and failed on rollback in such case).
+        # For quick index creations in case of missed indexes, use management
+        # command update_db_indexes.
         unique_together = ('course', 'day',)
         ordering = ['-day']
 
@@ -202,9 +210,9 @@ class VideoViewsByUser(models.Model):
     User's Video Views info.
     """
 
-    course = CourseKeyField(max_length=255, db_index=True)
-    user_id = models.IntegerField(db_index=True)
-    video_block_id = models.CharField(max_length=255, db_index=True)
+    course = CourseKeyField(max_length=255)
+    user_id = models.IntegerField()
+    video_block_id = models.CharField(max_length=255)
     is_completed = models.BooleanField(default=False)
     viewed_time = models.IntegerField(default=0)
 
@@ -238,14 +246,14 @@ class VideoViewsByDay(models.Model):
     Day's Video Views info.
     """
 
-    course = CourseKeyField(max_length=255, db_index=True)
-    video_block_id = models.CharField(max_length=255, db_index=True)
-    day = models.DateField(db_index=True)
+    course = CourseKeyField(max_length=255)
+    video_block_id = models.CharField(max_length=255)
+    day = models.DateField()
     total = models.IntegerField(default=0)
     users_ids = models.TextField(blank=True, null=True, validators=[validate_comma_separated_integer_list])
 
     class Meta:  # NOQA
-        unique_together = ('course', 'video_block_id', 'day')
+        unique_together = ('course', 'day', 'video_block_id')
         ordering = ['-day']
 
     def __unicode__(self):  # NOQA
@@ -258,13 +266,16 @@ class DiscussionActivity(models.Model):
     """
 
     event_type = models.CharField(max_length=255)
-    user_id = models.IntegerField(db_index=True)
-    course = CourseKeyField(max_length=255, db_index=True)
+    user_id = models.IntegerField()
+    course = CourseKeyField(max_length=255)
     category_id = models.CharField(max_length=255, blank=True, null=True)
-    commentable_id = models.CharField(max_length=255, db_index=True)
+    commentable_id = models.CharField(max_length=255)
     discussion_id = models.CharField(max_length=255)
     thread_type = models.CharField(max_length=255, blank=True, null=True)
     log_time = models.DateTimeField()
+
+    class Meta:  # NOQA
+        index_together = ('user_id', 'course')
 
     def __unicode__(self):  # NOQA
         return u'{},  {},  user_id - {}'.format(self.event_type, self.course, self.user_id)
@@ -275,8 +286,8 @@ class DiscussionActivityByDay(models.Model):
     Day's Discussion Activities info.
     """
 
-    course = CourseKeyField(max_length=255, db_index=True)
-    day = models.DateField(db_index=True)
+    course = CourseKeyField(max_length=255)
+    day = models.DateField()
     total = models.IntegerField(default=0)
 
     class Meta:  # NOQA
@@ -293,12 +304,18 @@ class StudentStepCourse(models.Model):
     """
 
     event_type = models.CharField(max_length=255)
-    user_id = models.IntegerField(db_index=True)
-    course = CourseKeyField(max_length=255, db_index=True)
+    user_id = models.IntegerField()
+    course = CourseKeyField(max_length=255)
     subsection_id = models.CharField(max_length=255)
     current_unit = models.CharField(max_length=255)
     target_unit = models.CharField(max_length=255)
     log_time = models.DateTimeField()
+
+    class Meta:  # NOQA
+        index_together = (
+            ('course', 'log_time'),
+            ('course', 'user_id')
+        )
 
     def __unicode__(self):  # NOQA
         return u'{},  {},  user_id - {}'.format(self.event_type, self.course, self.user_id)
@@ -309,7 +326,7 @@ class LastCourseVisitByUser(models.Model):
     Track the date of the last visit the course by user.
     """
 
-    user_id = models.IntegerField(db_index=True)
+    user_id = models.IntegerField()
     course = CourseKeyField(max_length=255, db_index=True)
     log_time = models.DateTimeField()
 
@@ -325,7 +342,7 @@ class CourseVisitsByDay(models.Model):
     Track the intensity of visits the course by the day.
     """
 
-    course = CourseKeyField(max_length=255, db_index=True)
+    course = CourseKeyField(max_length=255)
     users_ids = models.TextField(default='', validators=[validate_comma_separated_integer_list])
     day = models.DateField(db_index=True)
     total = models.IntegerField(default=0)

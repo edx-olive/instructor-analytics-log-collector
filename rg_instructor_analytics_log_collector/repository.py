@@ -32,11 +32,11 @@ class IRepository(object):
         """
         pass
 
-    def add_new_log_records(self, log_strings_list):
+    def add_new_log_records(self, log_file_descriptor):
         """
         Parse the list of raw string into records inside a database.
         """
-        for log_string in log_strings_list:
+        for log_string in log_file_descriptor:
             try:
                 json_log = json.loads(log_string)
                 data = {
