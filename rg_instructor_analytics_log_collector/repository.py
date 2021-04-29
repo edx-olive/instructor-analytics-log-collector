@@ -38,6 +38,9 @@ class IRepository(object):
         """
         for log_string in log_file_descriptor:
             try:
+                if type(log_string) is not str:
+                    # it is bytes in python 3
+                    log_string = log_string.decode('utf-8')
                 json_log = json.loads(log_string)
                 data = {
                     'message_type': 'event_type' in json_log and json_log['event_type'] or json_log['name'],
@@ -47,7 +50,7 @@ class IRepository(object):
                 }
                 try:
                     m_hash = hashlib.sha256(data['message_type']).hexdigest()
-                except UnicodeEncodeError:
+                except TypeError:
                     m_hash = hashlib.sha256(data['message_type'].encode('utf-8')).hexdigest()
                 data['message_type_hash'] = m_hash
             except ValueError as e:

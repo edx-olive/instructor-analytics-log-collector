@@ -3,7 +3,7 @@ Processor module.
 """
 from datetime import datetime
 import logging
-import time
+import six
 
 from rg_instructor_analytics_log_collector.models import LastProcessedLog, LogTable
 from rg_instructor_analytics_log_collector.processors.course_activity_pipeline import CourseActivityPipeline
@@ -11,7 +11,6 @@ from rg_instructor_analytics_log_collector.processors.discussion_pipeline import
 from rg_instructor_analytics_log_collector.processors.enrollment_pipeline import EnrollmentPipeline
 from rg_instructor_analytics_log_collector.processors.student_step_pipeline import StudentStepPipeline
 from rg_instructor_analytics_log_collector.processors.video_views_pipeline import VideoViewsPipeline
-from django.db.models import Min, Max
 from django.db import transaction
 
 log = logging.getLogger(__name__)
@@ -43,6 +42,8 @@ class Processor(object):
         super(Processor, self).__init__()
         self.sleep_time = sleep_time
         self.pipelines = filter(lambda x: x.alias in alias_list, self.available_pipelines)
+        if six.PY3:
+            self.pipelines = list(self.pipelines)
 
     def process(self):
         """

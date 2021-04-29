@@ -16,7 +16,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('processor', models.CharField(unique=True, max_length=2, choices=[(b'EN', b'Enrollment'), (b'VI', b'VideoViews')])),
-                ('log_table', models.ForeignKey(to='rg_instructor_analytics_log_collector.LogTable')),
+                ('log_table', models.ForeignKey(to='rg_instructor_analytics_log_collector.LogTable',
+                                                on_delete=models.deletion.CASCADE)),
             ],
         ),
     ]

@@ -82,7 +82,7 @@ class LastProcessedLog(models.Model):
         (COURSE_ACTIVITY, 'Course activity'),
     )
 
-    log_table = models.ForeignKey(LogTable)
+    log_table = models.ForeignKey(LogTable, on_delete=models.CASCADE)
     processor = models.CharField(max_length=2, choices=PROCESSOR_CHOICES, unique=True)
 
     @classmethod
