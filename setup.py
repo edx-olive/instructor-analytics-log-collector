@@ -14,7 +14,7 @@ setup(
     version='0.1.0',
     install_requires=[
         'setuptools',
-        'django-model-utils>=2.3.1,<4',
+        'django-model-utils==4.0.0',
     ],
     requires=[],
     packages=['rg_instructor_analytics_log_collector'],
