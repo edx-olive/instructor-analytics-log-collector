@@ -7,14 +7,12 @@ from abc import ABCMeta, abstractmethod
 from rg_instructor_analytics_log_collector.models import LastProcessedLog, LogTable
 
 
-class BasePipeline(object):
+class BasePipeline(metaclass=ABCMeta):
     """
     Base Pipeline.
 
     NOTE: After implementing new pipeline, add it to the Processor.
     """
-
-    __metaclass__ = ABCMeta
 
     """
     Readable name of the pipeline.

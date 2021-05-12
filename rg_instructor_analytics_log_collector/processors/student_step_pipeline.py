@@ -19,7 +19,7 @@ else:
 
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey, UsageKey
-from six.moves.urllib.parse import urlparse
+from urllib.parse import urlparse
 
 from rg_instructor_analytics_log_collector.constants import Events
 from rg_instructor_analytics_log_collector.models import LastProcessedLog, StudentStepCourse

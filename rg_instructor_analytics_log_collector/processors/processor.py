@@ -3,7 +3,6 @@ Processor module.
 """
 from datetime import datetime
 import logging
-import six
 
 from rg_instructor_analytics_log_collector.models import LastProcessedLog, LogTable
 from rg_instructor_analytics_log_collector.processors.course_activity_pipeline import CourseActivityPipeline
@@ -16,7 +15,7 @@ from django.db import transaction
 log = logging.getLogger(__name__)
 
 
-class Processor(object):
+class Processor():
     """
     Processor for read raw logs and push into pipelines.
     """
@@ -39,11 +38,9 @@ class Processor(object):
         :param alias_list: list of the pipelines that will be loaded to the current worker.
         :param sleep_time: size of the pause between read new portion of the raw logs.
         """
-        super(Processor, self).__init__()
+        super().__init__()
         self.sleep_time = sleep_time
-        self.pipelines = filter(lambda x: x.alias in alias_list, self.available_pipelines)
-        if six.PY3:
-            self.pipelines = list(self.pipelines)
+        self.pipelines = list(self.pipelines)
 
     def process(self):
         """

@@ -2,7 +2,7 @@
 import json
 
 
-class TestRecord(object):
+class TestRecord():
     """
     Dummy `Record` class.
 

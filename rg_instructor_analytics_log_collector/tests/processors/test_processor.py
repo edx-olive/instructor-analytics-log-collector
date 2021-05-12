@@ -10,7 +10,7 @@ from rg_instructor_analytics_log_collector.processors.processor import Processor
 from rg_instructor_analytics_log_collector.processors.student_step_pipeline import StudentStepPipeline
 
 
-class TestRecords(object):
+class TestRecords():
     """
     Dummy iterator class.
 
