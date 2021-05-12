@@ -6,18 +6,8 @@ import json
 import logging
 from urllib.parse import urlparse
 
-try:
-    from openedx.core.release import RELEASE_LINE
-except ImportError:
-    RELEASE_LINE = 'ficus'
-
-if RELEASE_LINE in ('ficus', 'ginkgo'):
-    # we should not use version older than 'ficus'
-    from django.core.urlresolvers import resolve, Resolver404
-else:
-    from django.urls import resolve
-    from django.urls.resolvers import Resolver404
-
+from django.urls import resolve
+from django.urls.resolvers import Resolver404
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey, UsageKey
 from xmodule.modulestore.django import modulestore
