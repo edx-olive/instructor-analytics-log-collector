@@ -4,18 +4,19 @@ Processor module.
 from datetime import datetime
 import logging
 
+from django.db import transaction
+
 from rg_instructor_analytics_log_collector.models import LastProcessedLog, LogTable
 from rg_instructor_analytics_log_collector.processors.course_activity_pipeline import CourseActivityPipeline
 from rg_instructor_analytics_log_collector.processors.discussion_pipeline import DiscussionPipeline
 from rg_instructor_analytics_log_collector.processors.enrollment_pipeline import EnrollmentPipeline
 from rg_instructor_analytics_log_collector.processors.student_step_pipeline import StudentStepPipeline
 from rg_instructor_analytics_log_collector.processors.video_views_pipeline import VideoViewsPipeline
-from django.db import transaction
 
 log = logging.getLogger(__name__)
 
 
-class Processor():
+class Processor:
     """
     Processor for read raw logs and push into pipelines.
     """
@@ -67,9 +68,10 @@ class Processor():
             for offset in range(0, records_count, chunk_size):
 
                 logging.info('{}: total records: {}. processing from {} to {}'.format(
-                             pipeline.alias,records_count,offset,offset+chunk_size))
+                    pipeline.alias, records_count, offset, offset + chunk_size
+                ))
 
-                for record in records[offset:offset+chunk_size]:
+                for record in records[offset:offset + chunk_size]:
                     # Format raw log to the internal format.
                     data_record = pipeline.format(record)
                     records_counter += 1
@@ -81,8 +83,10 @@ class Processor():
 
             logging.info(
                 '{} processor stopped at {} (processed: {}, saved: {}, rate: {} rps)'.format(
-                pipeline.alias, datetime.now(), records_counter, records_pushed_counter,
-                int(records_counter / (datetime.now() - time_start).total_seconds())))
+                    pipeline.alias, datetime.now(), records_counter, records_pushed_counter,
+                    int(records_counter / (datetime.now() - time_start).total_seconds())
+                )
+            )
 
     def delete_logs(self):
         """Delete all unused log records."""

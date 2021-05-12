@@ -3,7 +3,7 @@ Project constants.
 """
 
 
-class Events():
+class Events:
     """
     Edx events enum.
     """
