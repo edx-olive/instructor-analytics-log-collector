@@ -31,8 +31,8 @@ class LogTable(models.Model):
         unique_together = ('message_type_hash', 'log_time', 'user_name')
         ordering = ['-log_time']
 
-    def __unicode__(self):  # NOQA
-        return u'{} {}'.format(self.message_type, self.log_time)
+    def __str__(self):  # NOQA
+        return '{} {}'.format(self.message_type, self.log_time)
 
 
 class EnrollmentByDay(models.Model):
@@ -59,8 +59,8 @@ class EnrollmentByDay(models.Model):
         unique_together = ('course', 'day',)
         ordering = ['-day']
 
-    def __unicode__(self):  # NOQA
-        return u'{} {}'.format(self.day, self.course)
+    def __str__(self):  # NOQA
+        return '{} {}'.format(self.day, self.course)
 
 
 class LastProcessedLog(models.Model):
@@ -105,8 +105,8 @@ class VideoViewsByUser(models.Model):
     class Meta:  # NOQA
         unique_together = ('course', 'user_id', 'video_block_id')
 
-    def __unicode__(self):  # NOQA
-        return u'{} {} {}'.format(self.user_id, self.course, self.video_block_id)
+    def __str__(self):  # NOQA
+        return '{} {} {}'.format(self.user_id, self.course, self.video_block_id)
 
 
 class VideoViewsByBlock(models.Model):
@@ -123,8 +123,8 @@ class VideoViewsByBlock(models.Model):
     class Meta:  # NOQA
         unique_together = ('course', 'video_block_id')
 
-    def __unicode__(self):  # NOQA
-        return u'{} {}'.format(self.course, self.video_block_id)
+    def __str__(self):  # NOQA
+        return '{} {}'.format(self.course, self.video_block_id)
 
 
 class VideoViewsByDay(models.Model):
@@ -142,8 +142,8 @@ class VideoViewsByDay(models.Model):
         unique_together = ('course', 'day', 'video_block_id')
         ordering = ['-day']
 
-    def __unicode__(self):  # NOQA
-        return u'{}, {}, day - {}'.format(self.course, self.video_block_id, self.day)
+    def __str__(self):  # NOQA
+        return '{}, {}, day - {}'.format(self.course, self.video_block_id, self.day)
 
 
 class DiscussionActivity(models.Model):
@@ -163,8 +163,8 @@ class DiscussionActivity(models.Model):
     class Meta:  # NOQA
         index_together = ('user_id', 'course')
 
-    def __unicode__(self):  # NOQA
-        return u'{},  {},  user_id - {}'.format(self.event_type, self.course, self.user_id)
+    def __str__(self):  # NOQA
+        return '{},  {},  user_id - {}'.format(self.event_type, self.course, self.user_id)
 
 
 class DiscussionActivityByDay(models.Model):
@@ -180,8 +180,8 @@ class DiscussionActivityByDay(models.Model):
         unique_together = ('course', 'day')
         ordering = ['-day']
 
-    def __unicode__(self):  # NOQA
-        return u'{},  day - {}'.format(self.course, self.day)
+    def __str__(self):  # NOQA
+        return '{},  day - {}'.format(self.course, self.day)
 
 
 class StudentStepCourse(models.Model):
@@ -203,8 +203,8 @@ class StudentStepCourse(models.Model):
             ('course', 'user_id')
         )
 
-    def __unicode__(self):  # NOQA
-        return u'{},  {},  user_id - {}'.format(self.event_type, self.course, self.user_id)
+    def __str__(self):  # NOQA
+        return '{},  {},  user_id - {}'.format(self.event_type, self.course, self.user_id)
 
 
 class LastCourseVisitByUser(models.Model):
@@ -219,8 +219,8 @@ class LastCourseVisitByUser(models.Model):
     class Meta:  # NOQA
         unique_together = ('user_id', 'course')
 
-    def __unicode__(self):  # NOQA
-        return u'{}, user_id - {}'.format(self.course, self.user_id)
+    def __str__(self):  # NOQA
+        return '{}, user_id - {}'.format(self.course, self.user_id)
 
 
 class CourseVisitsByDay(models.Model):
@@ -237,5 +237,5 @@ class CourseVisitsByDay(models.Model):
         unique_together = ('course', 'day')
         ordering = ['-day']
 
-    def __unicode__(self):  # NOQA
-        return u'{},  day - {}'.format(self.course, self.day)
+    def __str__(self):  # NOQA
+        return '{},  day - {}'.format(self.course, self.day)
