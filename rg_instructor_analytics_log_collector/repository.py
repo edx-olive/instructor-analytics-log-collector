@@ -12,12 +12,10 @@ from rg_instructor_analytics_log_collector.models import LogTable, ProcessedZipL
 log = logging.getLogger(__name__)
 
 
-class IRepository(object):
+class IRepository(metaclass=ABCMeta):
     """
     Base repository class.
     """
-
-    __metaclass__ = ABCMeta
 
     def _get_logs_batch_size(self):
         """

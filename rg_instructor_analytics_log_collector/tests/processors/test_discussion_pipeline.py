@@ -33,10 +33,10 @@ class TestDiscussionPipeline(TestCase):
                          {'event_type': TestRecord.EVENT_TYPE,
                           'user_id': TestRecord.USER_ID,
                           'course': "course_key",
-                          'category_id': u"test_category_id",
-                          'commentable_id': u"test_commentable_id",
-                          'discussion_id': u"test_discussion_id",
-                          'thread_type': u'test_thread_type',
+                          'category_id': "test_category_id",
+                          'commentable_id': "test_commentable_id",
+                          'discussion_id': "test_discussion_id",
+                          'thread_type': 'test_thread_type',
                           'log_time': TestRecord.LOG_TIME})
 
     def tearDown(self):

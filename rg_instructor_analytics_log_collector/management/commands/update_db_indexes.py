@@ -1,8 +1,10 @@
+from django.core.management.base import BaseCommand
 from django.db import connection
-from django.core.management.base import BaseCommand, CommandError
 
-from rg_instructor_analytics_log_collector.models import CourseVisitsByDay, DiscussionActivityByDay, EnrollmentByDay, \
-    LastCourseVisitByUser, VideoViewsByDay, VideoViewsByUser
+from rg_instructor_analytics_log_collector.models import (
+    CourseVisitsByDay, DiscussionActivityByDay, EnrollmentByDay,
+    VideoViewsByDay, VideoViewsByUser,
+)
 
 INDEX_NAME_POSITION = 2
 SEQ_IN_INDEX_POSITION = 3
@@ -11,6 +13,8 @@ COLUMN_NAME_POSITION = 4
 
 def _get_indexes(table_cls):
     """
+    Get indexx method.
+
     :param table_cls: model class to get table name
     :return: dict in format {<index_name>: list[<column1>, ..., <columnN>}
     """
