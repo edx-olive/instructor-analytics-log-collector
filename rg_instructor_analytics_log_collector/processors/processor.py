@@ -41,7 +41,7 @@ class Processor:
         """
         super().__init__()
         self.sleep_time = sleep_time
-        self.pipelines = list(self.pipelines)
+        self.pipelines = [x for x in self.available_pipelines if x.alias in alias_list]
 
     def process(self):
         """
