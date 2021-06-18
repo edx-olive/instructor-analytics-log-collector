@@ -7,6 +7,8 @@ import hashlib
 import json
 import logging
 
+from django.db import OperationalError
+
 from rg_instructor_analytics_log_collector.models import LogTable, ProcessedZipLog
 
 log = logging.getLogger(__name__)
@@ -88,12 +90,20 @@ class MySQlRepository(IRepository):
         """
         Store parsed logs into the database.
         """
-        LogTable.objects.get_or_create(
-            message_type_hash=data['message_type_hash'],
-            log_time=data['log_time'],
-            user_name=data['user_name'],
-            defaults={'log_message': data['log_message'], 'message_type': data['message_type']}
-        )
+        # FIXME: try - except block was added to prevent unnecessary error related to the MySQL inability to support
+        #  UTF-8 (MySQL has a 3 byte limit on utf-8 characters while 4 byte support is needed). Since events with the
+        #  event_type in unicode are not looked as mandatory for our analytics reports we could stay with the current
+        #  solution. The proper fix proposal is discussed in the YT issue, please fide it by the link
+        #  https://youtrack.raccoongang.com/issue/RGA-242?p=RGA2-424
+        try:
+            LogTable.objects.get_or_create(
+                message_type_hash=data['message_type_hash'],
+                log_time=data['log_time'],
+                user_name=data['user_name'],
+                defaults={'log_message': data['log_message'], 'message_type': data['message_type']}
+            )
+        except OperationalError:
+            log.exception(f"Cannot store the record into database ({data['log_message']})")
 
     def mark_as_processed_source(self, source_name):
         """
