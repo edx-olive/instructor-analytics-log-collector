@@ -14,6 +14,11 @@ __________
 Unreleased
 ~~~~~~~~~~
 
+[v3.1.0] - 2021-07-08
+~~~~~~~~~~~~~~~~~~~~~
+* Feature Add Installable App Options
+* Docs: GitLab MR Template is added
+
 [v3.0.0] - 2021-06-17 (Koa+ only)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -21,7 +26,7 @@ Unreleased
 * Fix MySQL Operational Error storing 4 byte unicode
   `YouTrack issue RGA-242 <https://youtrack.raccoongang.com/issue/RGA-242?p=RGA2-424>`_
   (temporary workaround is added together with `FIXME` flag)
-* Remove unsupported OeX releases from the codebase.
+
 
 [Documentation|Enhancement] - 2021-06-16
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

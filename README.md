@@ -24,17 +24,28 @@ Record
 
 ## Setup
 
-* Install requirements
+* Add RG IA log collector to the edxapp venv
 * Set next environment variables: DJANGO_SETTINGS_MODULE and SERVICE_VARIANT
+  (if needed)
 ```
 # Example:
 DJANGO_SETTINGS_MODULE = lms.envs.devstack
 SERVICE_VARIANT = lms
 ```
-* Add `rg_instructor_analytics_log_collector` to the `ADDL_INSTALLED_APPS` in `lms.env.json`
-* Install package in to the environment with edx-platform
 * Run migrations
 * Ensure app has an access to the log directory
+* Run in the console:
+```bash
+sudo -sHu edxapp
+cd ~
+. edxapp_env
+pip install git+https://github.com/raccoongang/instructor-analytics-log-collector@v3.x.x#egg=instructor-analytics-log-collector
+cd edx-platform
+paver update_db
+exit
+sudo /edx/bin/supervisorctl restart edxapp:lms
+```
+
 
 ## Log Watcher running
 
@@ -48,7 +59,7 @@ python run_log_watcher.py [--tracking_log_dir] [--sleep_time] [--reload-logs]
 - `delete-logs` - Delete unused log records from database (after archived files processing only)
 
 ## New processor
-If you add new processor to *rg_instructor_analytics_log_collector* and **run_log_watcher.py** worker has runned with **--delete-logs** parameter, you need stop **run_log_watcher.py**,
+If you add new processor to *rg_instructor_analytics_log_collector* and **run_log_watcher.py** worker has run with **--delete-logs** parameter, you need stop **run_log_watcher.py**,
 and run manually:
 ```
 python run_log_watcher.py --reload-logs
