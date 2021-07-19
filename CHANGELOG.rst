@@ -13,6 +13,7 @@ __________
 
 Unreleased
 ~~~~~~~~~~
+* Feature Add support for tracking logs in S3 service.
 
 [v3.1.0] - 2021-07-08
 ~~~~~~~~~~~~~~~~~~~~~

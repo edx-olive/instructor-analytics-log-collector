@@ -3,6 +3,7 @@ Module for the provide general access to the storage for the logs (i.e. mySql).
 """
 
 from abc import ABCMeta, abstractmethod
+import codecs
 import hashlib
 import json
 import logging
@@ -32,10 +33,16 @@ class IRepository(metaclass=ABCMeta):
         """
         pass
 
-    def add_new_log_records(self, log_file_descriptor):
+    def add_new_log_records(self, log_file_descriptor, streaming_read: bool = False):
         """
         Parse the list of raw string into records inside a database.
+
+        log_file_descriptor: Is an object handling opened tracking log file.
+        streaming_read (bool): Switcher for stream reading not archived files from the S3 bucket.
         """
+        if streaming_read:
+            log_file_descriptor = codecs.getreader('utf-8')(log_file_descriptor)
+
         for log_string in log_file_descriptor:
             try:
                 if type(log_string) is not str:
@@ -82,9 +89,9 @@ class MySQlRepository(IRepository):
 
     def get_processed_zip_files(self):
         """
-        Return list of the file names, that already was processed.
+        Return a set of the file names, that already was processed.
         """
-        return ProcessedZipLog.objects.values_list('file_name', flat=True)
+        return set(ProcessedZipLog.objects.values_list('file_name', flat=True))
 
     def store_new_log_message(self, data):
         """
