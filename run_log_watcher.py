@@ -9,12 +9,14 @@ import time
 import django
 django.setup()
 
+from rg_instructor_analytics_log_collector.backends.blob_backend import BlobBackend
 from rg_instructor_analytics_log_collector.backends.file_backend import FileBackend
 from rg_instructor_analytics_log_collector.backends.s3_backend import S3Backend
 
 BACKENDS = {
     'file-system': FileBackend,
     's3': S3Backend,
+    'blob': BlobBackend,
 }
 
 
@@ -79,6 +81,22 @@ def main():
         type=str,
         default=''
     )
+    parser.add_argument(
+        '--blob-conn-str',
+        action="store",
+        dest="conn_str",
+        help="Azure Blob connection string - to get access to Azure Blob (required if backend blob is chosen)",
+        type=str,
+        default=''
+    )
+    parser.add_argument(
+        '--container-name',
+        action="store",
+        dest="container_name",
+        help="The name of the Blob container with the tracking logs (required if backend blob is chosen)",
+        type=str,
+        default=''
+    )
 
     args = parser.parse_args()
 
@@ -93,6 +111,12 @@ def main():
     if backend_name == 's3' and (not args.aws_access_key_id or not args.aws_secret_access_key):
         print(
             f"For chosen backend {backend_name} params: --aws-access-key-id and --aws-secret-access-key can't be empty."
+        )
+        sys.exit(1)
+
+    if backend_name == 'blob' and (not args.conn_str or not args.container_name):
+        print(
+            f"For chosen backend {backend_name} params: --conn-str and --container-name can't be empty."
         )
         sys.exit(1)
 
