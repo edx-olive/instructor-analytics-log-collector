@@ -13,6 +13,10 @@ __________
 
 Unreleased
 ~~~~~~~~~~
+* Feature Add support for tracking logs in object storages:
+   - S3 service
+   - Azure Blob service
+
 
 [v3.1.0] - 2021-07-08
 ~~~~~~~~~~~~~~~~~~~~~

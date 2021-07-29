@@ -32,15 +32,13 @@ class Processor:
     CHUNK_SIZE_PROCESSOR = 10000
     CHUNK_SIZE_DELETE = 50000
 
-    def __init__(self, alias_list, sleep_time):
+    def __init__(self, alias_list):
         """
         Construct Processor.
 
         :param alias_list: list of the pipelines that will be loaded to the current worker.
-        :param sleep_time: size of the pause between read new portion of the raw logs.
         """
         super().__init__()
-        self.sleep_time = sleep_time
         self.pipelines = [x for x in self.available_pipelines if x.alias in alias_list]
 
     def process(self):

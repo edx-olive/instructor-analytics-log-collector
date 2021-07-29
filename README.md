@@ -51,12 +51,17 @@ sudo /edx/bin/supervisorctl restart edxapp:lms
 
 ```
 # bash
-python run_log_watcher.py [--tracking_log_dir] [--sleep_time] [--reload-logs]
+python run_log_watcher.py [--tracking_log_dir] [--sleep_time] [--backend] [--reload-logs] [--delete-logs] [--c] [--aws-secret-access-key] [--blob-conn-str] [--container-name]
 ```
-- `tracking_log_dir` points to the log directory (default: `/edx/var/log/tracking`)
-- `sleep_time` - log directory rescan period (seconds, default: 5 minutes).
-- `reload-logs` - Reload all logs from files into database
-- `delete-logs` - Delete unused log records from database (after archived files processing only)
+- `tracking_log_dir` - (str) points to the log directory (default: `/edx/var/log/tracking`)
+- `sleep_time` - (int) log directory rescan period (seconds, default: 5 minutes).
+- `backend` - (str) backend to work with. Available parameters: `file-system`, `s3`, and `blob` (default: `file-system`)
+- `reload-logs` - (bool) Reload all logs from files into database
+- `delete-logs` - (bool) Delete unused log records from database (after archived files processing only)
+- `aws-access-key-id` - (str) AWS access key ID - to get access to S3 bucket (required if backend S3 is chosen)
+- `aws-secret-access-key` - (str) AWS access secret key - to get access to S3 bucket (required if backend S3 is chosen)
+- `blob-conn-str` - (str) Azure Blob connection string - to get access to Azure Blob (required if backend blob is chosen)
+- `container-name` - (str) The name of the Blob container with the tracking logs (required if backend blob is chosen)
 
 ## New processor
 If you add new processor to *rg_instructor_analytics_log_collector* and **run_log_watcher.py** worker has run with **--delete-logs** parameter, you need stop **run_log_watcher.py**,

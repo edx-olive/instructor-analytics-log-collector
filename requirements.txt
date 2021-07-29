@@ -1,1 +1,2 @@
-ipython
+azure-storage-blob~=12.8.1
+setuptools
