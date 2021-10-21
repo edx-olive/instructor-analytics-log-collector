@@ -6,4 +6,10 @@ class RgIALogCollectorAppConfig(AppConfig):
     name = 'rg_instructor_analytics_log_collector'
     verbose_name = 'RG Instructor Analytics Log Collector'
 
-    plugin_app = {}  # Empty attribute is needed to add app into INSTALLED_APPS
+    plugin_app = {
+        PluginSettings.CONFIG: {
+            'lms.djangoapp': {
+                'production': {},  # NOTE: 'relative_path' is omitted, the default_relative_path is 'settings'
+            }
+        },
+    }

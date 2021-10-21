@@ -4,6 +4,7 @@ Collection of the course activity pipeline.
 import json
 import logging
 
+from django.db.models import QuerySet
 from opaque_keys.edx.keys import CourseKey
 
 from rg_instructor_analytics_log_collector.models import CourseVisitsByDay, LastCourseVisitByUser, LastProcessedLog, \
@@ -33,12 +34,14 @@ class CourseActivityPipeline(BasePipeline):
 
         return query.order_by('created')
 
-    def format(self, record):
+    def format(self, record, live_event=False):
         """
         Format raw log to the internal format.
+
+        record: could be QuerySet (or json object if live_event == True)
         """
         data = None
-        event_body = json.loads(record.log_message)
+        event_body = record.get('log_message') if live_event else json.loads(record.log_message)
         try:
             course_id = event_body['context']['course_id']
             user_id = event_body['context']['user_id']
@@ -46,22 +49,23 @@ class CourseActivityPipeline(BasePipeline):
             return data
         else:
             if course_id and user_id:
-                data = {'course_id': course_id, 'user_id': user_id, 'log_time': record.log_time}
+                data = {
+                    'course_id': course_id,
+                    'user_id': user_id,
+                    'log_time': record.get('log_time') if live_event else record.log_time
+                }
 
         return data if data and self.is_valid(data) else None
 
-    def is_valid(self, data):
+    @staticmethod
+    def is_valid(data):
         """
         Validate a log record.
 
         Returns:
             results of validation (bool)
         """
-        return True if (
-            data.get('user_id') and
-            data.get('course_id') and
-            data.get('log_time')
-        ) else False
+        return all((data.get('user_id'), data.get('course_id'), data.get('log_time')))
 
     def push_to_database(self, record):
         """

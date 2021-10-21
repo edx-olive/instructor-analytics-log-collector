@@ -198,11 +198,13 @@ class StudentStepPipeline(BasePipeline):
 
         return current_unit, target_unit, subsection_id
 
-    def format(self, record):
+    def format(self, record, live_event=False):
         """
         Format raw log to the internal format.
+
+        record: could be QuerySet (or json object if live_event == True)
         """
-        event_body = json.loads(record.log_message)
+        event_body = record.get('log_message') if live_event else json.loads(record.log_message)
 
         try:
             course = CourseKey.from_string(event_body['context']['course_id'])
@@ -211,36 +213,37 @@ class StudentStepPipeline(BasePipeline):
 
         current_unit, target_unit, subsection_id = self.get_units(
             json.loads(event_body['event']),
-            record.message_type,
+            record.get('message_type') if live_event else record.message_type,
             event_body['context']
         )
         data = {
-            'event_type': record.message_type,
+            'event_type': record.get('message_type') if live_event else record.message_type,
             'user_id': event_body['context']['user_id'],
             'course': course,
             'subsection_id': subsection_id,
             'current_unit': current_unit,
             'target_unit': target_unit,
-            'log_time': record.log_time
+            'log_time': record.get('log_time') if live_event else record.log_time
         }
         return data if self.is_valid(data) else None
 
-    def is_valid(self, data):
+    @staticmethod
+    def is_valid(data):
         """
         Validate a log record.
 
         Returns:
             results of validation (bool)
         """
-        return True if (
-            data.get('user_id') and
-            data.get('current_unit') and
-            data.get('target_unit') and
-            data.get('subsection_id') and
-            data.get('log_time') and
-            data.get('course') and
-            data.get('event_type')
-        ) else False
+        return all((
+            data.get('user_id'),
+            data.get('current_unit'),
+            data.get('target_unit'),
+            data.get('subsection_id'),
+            data.get('log_time'),
+            data.get('course'),
+            data.get('event_type'),
+        ))
 
     def push_to_database(self, record):
         """

@@ -46,8 +46,20 @@ exit
 sudo /edx/bin/supervisorctl restart edxapp:lms
 ```
 
+## Live Events Support
+
+`rg_instaructor_analytics_log_collector` works with the live event directly by adding `RGAnalyticsBackend` to the
+`EVENT_TRACKING_BACKENDS['tracking_logs']`.  Backend handle events one by one and add required data to the 
+Log Collector tables. `tracking.log` files still could be used for "cold" RG analytics start or in case one need
+to reload data from the sored log files.
 
 ## Log Watcher running
+
+Could be used to gather statistics data from the tracking log files on the "cold" start for the data that was
+collected before RG IA is started.
+
+**IMPORTANT (DevOps)** *Log Watcher* should not be added to the supervisor services or as a chron job to the 
+instance anymore.
 
 ```
 # bash

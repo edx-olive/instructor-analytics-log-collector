@@ -21,9 +21,13 @@ class VideoViewsPipeline(BasePipeline):
     supported_types = Events.VIDEO_VIEW_EVENTS
     processor_name = LastProcessedLog.VIDEO_VIEWS
 
-    def format(self, record):
-        """Format raw log to the internal format."""
-        event_body = json.loads(record.log_message)
+    def format(self, record, live_event=False):
+        """
+        Format raw log to the internal format.
+
+        record: could be QuerySet (or json object if live_event == True)
+        """
+        event_body = record.get('log_message') if live_event else json.loads(record.log_message)
         event_body_detail = json.loads(event_body['event'])
         try:
             data = {
@@ -31,29 +35,34 @@ class VideoViewsPipeline(BasePipeline):
                 'user_id': event_body['context']['user_id'],
                 'block_id': event_body_detail['id'],
                 'viewed_time': event_body_detail['currentTime'],
-                'is_video_completed': True if record.message_type == Events.USER_FINISHED_WATCH_VIDEO else False,
-                'log_time': record.log_time,
-                'event_type': record.message_type
+                'is_video_completed': (
+                    True if (
+                        record.get('message_type') if live_event else record.message_type
+                    ) == Events.USER_FINISHED_WATCH_VIDEO else False
+                ),
+                'log_time': record.get('log_time') if live_event else record.log_time,
+                'event_type': record.get('message_type') if live_event else record.message_type
             }
         except KeyError:
             data = {}
 
         return data if self.is_valid(data) else None
 
-    def is_valid(self, data):
+    @staticmethod
+    def is_valid(data):
         """
         Validate a log record.
 
         Returns:
             results of validation (bool)
         """
-        return True if (
-            data.get('user_id') and
-            data.get('course_id') and
-            data.get('block_id') and
-            data.get('log_time') and
-            data.get('event_type')
-        ) else False
+        return all((
+            data.get('user_id'),
+            data.get('course_id'),
+            data.get('block_id'),
+            data.get('log_time'),
+            data.get('event_type'),
+        ))
 
     def push_to_database(self, record):
         """Save Video Views info to the database."""

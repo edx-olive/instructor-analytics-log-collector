@@ -24,28 +24,31 @@ class EnrollmentPipeline(BasePipeline):
     supported_types = Events.ENROLLMENT_EVENTS
     processor_name = LastProcessedLog.ENROLLMENT
 
-    def format(self, record):
+    def format(self, record, live_event=False):
         """
         Format raw log to the internal format.
+
+        record: could be QuerySet (or json object if live_event == True)
         """
-        event_body = json.loads(record.log_message)
+        event_body = record.get('log_message') if live_event else json.loads(record.log_message)
 
         data = {
-            'is_enrolled': record.message_type == Events.USER_ENROLLED,
+            'is_enrolled': (record.get('message_type') if live_event else record.message_type) == Events.USER_ENROLLED,
             'course': event_body['event']['course_id'],
-            'log_time': record.log_time
+            'log_time': record.get('log_time') if live_event else record.log_time
         }
 
         return data if data and self.is_valid(data) else None
 
-    def is_valid(self, data):
+    @staticmethod
+    def is_valid(data):
         """
         Validate a log record.
 
         Returns:
             results of validation (bool)
         """
-        return True if (data.get('log_time') and data.get('course')) else False
+        return all((data.get('log_time'), data.get('course')))
 
     def push_to_database(self, record):
         """
