@@ -14,6 +14,10 @@ __________
 Unreleased
 ~~~~~~~~~~
 
+[v3.3.0] - 2021-10-21
+~~~~~~~~~~~~~~~~~~~~~
+* Feature Add support for live events
+
 [v3.2.0] - 2021-07-29
 ~~~~~~~~~~~~~~~~~~~~~
 * Feature Add support for tracking logs in object storages:

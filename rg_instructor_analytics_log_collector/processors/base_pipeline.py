@@ -30,6 +30,14 @@ class BasePipeline(metaclass=ABCMeta):
     """
     processor_name = None
 
+    def is_process_event(self, event_type):
+        """
+        Util method to filter events for backend processing
+        """
+        if not self.supported_types or event_type in self.supported_types:
+            return True
+        return False
+
     def retrieve_last_date(self):
         """
         Fetch the moment of time daily enrollments were lastly updated.
@@ -55,14 +63,15 @@ class BasePipeline(metaclass=ABCMeta):
         return query.order_by('log_time')
 
     @abstractmethod
-    def format(self, record):
+    def format(self, record, live_event: bool = False):
         """
         Process raw message with different format to the single format.
 
         Note, if there no needs to change format set it as property, that equal to None.
 
         In case, when given record dosent relate to the given pipeline - return None.
-        :param record:  raw log record.
+        :param record:  raw log record (or json object if live_event == True).
+        :param live_event: flag to handle live events.
         :return: dictionary with consistent structure.
         """
         pass

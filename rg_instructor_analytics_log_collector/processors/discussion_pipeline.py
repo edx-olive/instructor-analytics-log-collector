@@ -25,12 +25,14 @@ class DiscussionPipeline(BasePipeline):
     supported_types = Events.DISCUSSION_EVENTS
     processor_name = LastProcessedLog.DISCUSSION_ACTIVITY
 
-    def format(self, record):
+    def format(self, record, live_event=False):
         """
         Format raw log to the internal format.
+
+        record: could be QuerySet (or json object if live_event == True)
         """
         data = None
-        event_body = json.loads(record.log_message)
+        event_body = record.get('log_message') if live_event else json.loads(record.log_message)
 
         try:
             course = CourseKey.from_string(event_body['context']['course_id'])
@@ -38,33 +40,34 @@ class DiscussionPipeline(BasePipeline):
             pass
         else:
             data = {
-                'event_type': record.message_type,
+                'event_type': record.get('message_type') if live_event else record.message_type,
                 'user_id': event_body['context']['user_id'],
                 'course': course,
                 'category_id': event_body['event'].get('category_id'),
                 'commentable_id': event_body['event']['commentable_id'],
                 'discussion_id': event_body['event']['id'],
                 'thread_type': event_body['event'].get('thread_type'),
-                'log_time': record.log_time
+                'log_time': record.get('log_time') if live_event else record.log_time
             }
 
         return data if data and self.is_valid(data) else None
 
-    def is_valid(self, data):
+    @staticmethod
+    def is_valid(data):
         """
         Validate a log record.
 
         Returns:
             results of validation (bool)
         """
-        return True if (
-            data.get('user_id') and
-            data.get('commentable_id') and
-            data.get('course') and
-            data.get('event_type') and
-            data.get('discussion_id') and
+        return all((
+            data.get('user_id'),
+            data.get('commentable_id'),
+            data.get('course'),
+            data.get('event_type'),
+            data.get('discussion_id'),
             data.get('log_time')
-        ) else False
+        ))
 
     def push_to_database(self, record):
         """
