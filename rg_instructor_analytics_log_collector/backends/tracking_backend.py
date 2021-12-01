@@ -1,5 +1,5 @@
 """
-Module with the backend for handling Live Event Tracking
+Module with the backend for handling Live Event Tracking.
 """
 from logging import getLogger
 
@@ -12,6 +12,7 @@ class RGAnalyticsBackend:
     """
     Event tracker backend that handle live events and store data into RG IA database.
     """
+
     processor = Processor(["enrollment", "video_views", "discussion", "student_step", "course_activity"])
 
     def send(self, event):

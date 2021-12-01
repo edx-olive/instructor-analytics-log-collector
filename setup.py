@@ -26,6 +26,7 @@ with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
 with open(os.path.join(os.path.dirname(__file__), 'CHANGELOG.rst')) as changelog:
     CHANGELOG = changelog.read()
 
+
 def load_requirements(*requirements_paths):
     """
     Load all requirements from the specified requirements files.
@@ -43,9 +44,9 @@ def load_requirements(*requirements_paths):
 
 def is_requirement(line):
     """
-    Return True if the requirement line is a package requirement;
+    Return True if the requirement line is a package requirement.
 
-    that is, it is not blank, a comment, a URL, or an included file.
+    That is, it is not blank, a comment, a URL, or an included file.
     """
     return not (line == '' or line.startswith(('-r', '#', '-e', 'git+', '-c')))
 
@@ -56,6 +57,7 @@ setup(
     install_requires=load_requirements("requirements.txt"),
     requires=[],
     packages=['rg_instructor_analytics_log_collector'],
+    include_package_data=True,
     description='Open edX log collector',
     long_description=README + '\n\n' + CHANGELOG,
     entry_points={

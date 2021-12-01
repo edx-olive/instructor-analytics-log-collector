@@ -32,7 +32,7 @@ class BasePipeline(metaclass=ABCMeta):
 
     def is_process_event(self, event_type):
         """
-        Util method to filter events for backend processing
+        Util method to filter events for backend processing.
         """
         if not self.supported_types or event_type in self.supported_types:
             return True

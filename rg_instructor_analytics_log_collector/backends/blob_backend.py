@@ -1,5 +1,5 @@
 """
-Defines the backend class to work with the tracking logs stored un the Azure Blob storage
+Defines the backend class to work with the tracking logs stored un the Azure Blob storage.
 """
 import gzip
 from io import BytesIO
