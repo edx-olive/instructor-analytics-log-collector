@@ -1,5 +1,5 @@
 """
-Defines the backend class to work with the tracking logs stored un the S3 storage
+Defines the backend class to work with the tracking logs stored un the S3 storage.
 """
 import logging
 from typing import Generator, Tuple

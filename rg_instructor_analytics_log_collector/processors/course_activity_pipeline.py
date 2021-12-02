@@ -4,7 +4,6 @@ Collection of the course activity pipeline.
 import json
 import logging
 
-from django.db.models import QuerySet
 from opaque_keys.edx.keys import CourseKey
 
 from rg_instructor_analytics_log_collector.models import CourseVisitsByDay, LastCourseVisitByUser, LastProcessedLog, \

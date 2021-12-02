@@ -14,6 +14,11 @@ __________
 Unreleased
 ~~~~~~~~~~
 
+[v3.3.1] - 2021-12-01
+~~~~~~~~~~~~~~~~~~~~~
+* Fix data included to the package.
+* Fix styling issues.
+
 [v3.3.0] - 2021-10-21
 ~~~~~~~~~~~~~~~~~~~~~
 * Feature Add support for live events

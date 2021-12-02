@@ -1,1 +1,2 @@
-recursive-include rg_instructor_analytics_log_collector *py
+include CHANGELOG.rst requirements.txt
+recursive-exclude rg_instructor_analytics_log_collector/tests *

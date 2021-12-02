@@ -1,5 +1,5 @@
 """
-Defines the abstract base class that all backends should be based on
+Defines the abstract base class that all backends should be based on.
 """
 from abc import ABCMeta, abstractmethod
 import gzip
@@ -16,6 +16,7 @@ class BaseLogCollectorBackend(metaclass=ABCMeta):
     """
     The base abstract class for all file storage backends.
     """
+
     repository = MySQlRepository()
     processor = Processor(["enrollment", "video_views", "discussion", "student_step", "course_activity"])
 

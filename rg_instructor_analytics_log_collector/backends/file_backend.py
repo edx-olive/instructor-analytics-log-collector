@@ -1,5 +1,5 @@
 """
-Defines the backend class to work with the tracking logs stored un the file system
+Defines the backend class to work with the tracking logs stored un the file system.
 """
 import logging
 from os import listdir
