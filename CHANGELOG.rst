@@ -14,6 +14,13 @@ __________
 Unreleased
 ~~~~~~~~~~
 
+[Fix] - 2022-03-16
+~~~~~~~~~~~~~~~~~~
+* Make the Student Step pipeline MFE compatible
+
+  * this is a part of the Student Step pipeline fix for MFE
+  * https://youtrack.raccoongang.com/issue/RGOeX-991
+
 [v3.3.1] - 2021-12-01
 ~~~~~~~~~~~~~~~~~~~~~
 * Fix data included to the package.

@@ -99,6 +99,9 @@ class StudentStepPipeline(BasePipeline):
 
             try:
                 subsection_block = modulestore().get_item(sequential_locator, depth=1)
+                # to make the pipeline MFE-compatible
+                if sequential_locator.block_type == 'vertical':
+                    subsection_block = subsection_block.get_parent()
             except ItemNotFoundError as err:
                 logging.info('Item {} not found.'.format(err))
                 return current_unit, target_unit, subsection_id
