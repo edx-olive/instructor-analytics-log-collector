@@ -14,8 +14,8 @@ __________
 Unreleased
 ~~~~~~~~~~
 
-[Fix] - 2022-03-16
-~~~~~~~~~~~~~~~~~~
+[v3.3.2] - 2022-04-21
+~~~~~~~~~~~~~~~~~~~~~
 * Make the Student Step pipeline MFE compatible
 
   * this is a part of the Student Step pipeline fix for MFE
